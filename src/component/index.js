@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './index.css';
 import FlipMove from 'react-flip-move';
 import UploadIcon from './UploadIcon.svg';
+import JsonIcon from './JsonIcon.svg'
 
 const styles = {
   display: "flex",
@@ -31,8 +32,8 @@ class ReactImageUploadComponent extends React.Component {
     this.triggerFileUpload = this.triggerFileUpload.bind(this);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot){
-    if(prevState.files !== this.state.files){
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.files !== this.state.files) {
       this.props.onChange(this.state.files, this.state.pictures);
     }
   }
@@ -40,9 +41,9 @@ class ReactImageUploadComponent extends React.Component {
   /*
    Load image at the beggining if defaultImage prop exists
    */
-  componentWillReceiveProps(nextProps){
-    if(nextProps.defaultImages !== this.props.defaultImages){
-      this.setState({pictures: nextProps.defaultImages});
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.defaultImages !== this.props.defaultImages) {
+      this.setState({ pictures: nextProps.defaultImages });
     }
   }
 
@@ -77,7 +78,7 @@ class ReactImageUploadComponent extends React.Component {
         continue;
       }
       // Check for file size
-      if(file.size > this.props.maxFileSize) {
+      if (file.size > this.props.maxFileSize) {
         fileError = Object.assign(fileError, {
           type: ERROR.FILESIZE_TOO_LARGE
         });
@@ -92,18 +93,18 @@ class ReactImageUploadComponent extends React.Component {
       fileErrors
     });
 
-    const {singleImage} = this.props;
+    const { singleImage } = this.props;
 
     Promise.all(allFilePromises).then(newFilesData => {
-      const dataURLs = singleImage?[]:this.state.pictures.slice();
-      const files = singleImage?[]:this.state.files.slice();
+      const dataURLs = singleImage ? [] : this.state.pictures.slice();
+      const files = singleImage ? [] : this.state.files.slice();
 
       newFilesData.forEach(newFileData => {
         dataURLs.push(newFileData.dataURL);
         files.push(newFileData.file);
       });
 
-      this.setState({pictures: dataURLs, files: files});
+      this.setState({ pictures: dataURLs, files: files });
     });
   }
 
@@ -124,7 +125,7 @@ class ReactImageUploadComponent extends React.Component {
         // Add the file name to the data URL
         let dataURL = e.target.result;
         dataURL = dataURL.replace(";base64", `;name=${file.name};base64`);
-        resolve({file, dataURL});
+        resolve({ file, dataURL });
       };
 
       reader.readAsDataURL(file);
@@ -139,7 +140,7 @@ class ReactImageUploadComponent extends React.Component {
     const filteredPictures = this.state.pictures.filter((e, index) => index !== removeIndex);
     const filteredFiles = this.state.files.filter((e, index) => index !== removeIndex);
 
-    this.setState({pictures: filteredPictures, files: filteredFiles}, () => {
+    this.setState({ pictures: filteredPictures, files: filteredFiles }, () => {
       this.props.onChange(this.state.files, this.state.pictures);
     });
   }
@@ -152,7 +153,7 @@ class ReactImageUploadComponent extends React.Component {
     return fileErrors.map((fileError, index) => {
       return (
         <div className={'errorMessage ' + this.props.errorClass} key={index} style={this.props.errorStyle}>
-          * {fileError.name} {fileError.type === ERROR.FILESIZE_TOO_LARGE ? this.props.fileSizeError: this.props.fileTypeError}
+          * {fileError.name} {fileError.type === ERROR.FILESIZE_TOO_LARGE ? this.props.fileSizeError : this.props.fileTypeError}
         </div>
       );
     });
@@ -163,7 +164,7 @@ class ReactImageUploadComponent extends React.Component {
    */
   renderIcon() {
     if (this.props.withIcon) {
-      return <img src={UploadIcon} className="uploadIcon"	alt="Upload Icon" />;
+      return <img src={UploadIcon} className="uploadIcon" alt="Upload Icon" />;
     }
   }
 
@@ -191,10 +192,13 @@ class ReactImageUploadComponent extends React.Component {
 
   renderPreviewPictures() {
     return this.state.pictures.map((picture, index) => {
+      const source = this.state.files[index].name.split('.').pop() === "json"
+        ? JsonIcon
+        : picture
       return (
         <div key={index} className="uploadPictureContainer">
           <div className="deleteImage" onClick={() => this.removeImage(picture)}>X</div>
-          <img src={picture} className="uploadPicture" alt="preview"/>
+          <img src={source} className="uploadPicture" alt="preview" />
         </div>
       );
     });
@@ -208,7 +212,7 @@ class ReactImageUploadComponent extends React.Component {
   }
 
   clearPictures() {
-    this.setState({pictures: []})
+    this.setState({ pictures: [] })
   }
 
   render() {
@@ -237,7 +241,7 @@ class ReactImageUploadComponent extends React.Component {
             onClick={this.onUploadClick}
             accept={this.props.accept}
           />
-          { this.props.withPreview ? this.renderPreview() : null }
+          {this.props.withPreview ? this.renderPreview() : null}
         </div>
       </div>
     )
@@ -267,7 +271,7 @@ ReactImageUploadComponent.defaultProps = {
   style: {},
   errorStyle: {},
   singleImage: false,
-  onChange: () => {},
+  onChange: () => { },
   defaultImages: []
 };
 
